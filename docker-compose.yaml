@@ -1,0 +1,38 @@
+services:
+  host:
+    image: VPN_info_hw/host
+    build: ./host
+    networks:
+      outer-net: 192.168.2.2
+  router:
+    image: VPN_info_hw/router
+    build: ./router
+    devices:
+      - /dev/net/tun
+    networks:
+      outer-net:
+        ipv4_address: 192.168.2.1
+      inner-net:
+        ipv4_address: 10.10.10.3
+
+  client:
+    image: VPN_info_hw/client
+    build: ./client
+    devices:
+      - /dev/net/tun
+    networks:
+      inner-net:
+        ipv4_address: 10.10.10.2
+
+networks:
+  inner-net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.10.10.0/24
+
+  outer-net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.2.0/24
